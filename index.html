@@ -137,14 +137,14 @@
              context.textAlign = "center";
              context.textBaseline = 'middle';
 
-             context.translate(165, 165);
+             context.translate(185, 155);
              context.rotate(-Math.PI / 8);
 
              var t = $("#edPhrase").val().trim();
              var lh = 1.4 * parseInt($("#cbFontSize").val());
              
-             var h = wrapText(context, t, 0, 0, 200, lh, true);
-             wrapText(context, t, 0, -(h-lh)/2, 200, lh);
+             var h = wrapText(context, t, 0, 0, 250, lh, true);
+             wrapText(context, t, 0, -(h-lh)/2, 250, lh);
 
              context.setTransform(1, 0, 0, 1, 0, 0);
          });
@@ -190,7 +190,7 @@
         <div id="content">
             <canvas id="cnvStamp" width="400" height="300"></canvas>
             <div>        
-                <textarea id="edPhrase"  rows="2" cols="28">Wanzin !!!</textarea>
+                <textarea id="edPhrase"  rows="2" cols="28">Wannzinn !!!</textarea>
             </div>
             <div>
                 <select id="cbFontSize">
