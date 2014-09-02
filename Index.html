@@ -1,0 +1,230 @@
+﻿<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Inoffizieller Stempelgenerator der Freunde und Freundinnen des Arbeitskreises DEUTSCH für FPÖ-Anhänger</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, minimal-ui"/>
+		<meta property="og:url" content="http://lagushkin.github.io/akstempel/" />
+		<meta property="og:site_name" content="AK Stempelgenerator" />
+		<meta property="og:title" content="AK Stempelgenerator" />
+		<meta property="og:description" content="Inoffizieller Stempelgenerator der Freunde und Freundinnen des Arbeitskreises DEUTSCH für FPÖ-Anhänger" />
+		<meta property="og:type" content="website" />
+		<meta property="og:author" content="https://www.facebook.com/pages/Stempelgenerator-der-FreundInnen-des-AK-Deutsch-f%C3%BCr-FP%C3%96-Anh%C3%A4nger/563542633774139" />
+		<meta property="og:image" content="http://lagushkin.github.io/akstempel/wanzin.jpg" />
+		<meta property="og:image:width" content="400" />
+		<meta property="og:image:height" content="300" />
+		<meta property="twitter:domain" content="http://lagushkin.github.io" />
+		<meta property="twitter:title" content="AK Stempelgenerator" />
+		<meta property="twitter:description" content="Inoffizieller Stempelgenerator der Freunde und Freundinnen des Arbeitskreises DEUTSCH für FPÖ-Anhänger" />
+		<meta property="twitter:image:src" content="http://lagushkin.github.io/akstempel/wanzin.jpg" />
+		<meta property="twitter:image:width" content="400" />
+		<meta property="twitter:image:height" content="300" />
+        <link rel="icon" type="image/jpg" href="Designcontest-Vintage-Stamp.ico">
+    <style>
+      html, body
+      {
+        margin: 0px;
+        padding: 0px;
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+      }
+      
+      #hlDownload, #hlDownload:visited {
+	    cursor:pointer;
+	    color:#000;
+	}
+	#btnSetText, #hlDownload
+	{
+	    border: solid 1px silver;
+	    padding: 2px 10px 2px 10px;
+	    background: lightgrey;
+	}
+	div, textarea, input, select, h3
+	{
+	    font-family: Verdana;
+	}
+	textarea, input, select, a#hlDownload, label
+	{
+	    font-size: larger;
+	}
+	div#container
+	{
+       position: absolute;
+       top: 50%;
+       margin-top: -200px;/* half of #content height*/
+       left: 0;
+       width: 100%;
+    }
+    div#content {
+       width: 400px;
+       margin-left: auto;
+       margin-right: auto;
+       height: 400px;
+       text-align: center;
+    }
+    
+    /* http://hextris.github.io/hextris/style/style.css */
+    #bottombar {
+	    padding:0;
+	    position:fixed;
+	    width:1000px;
+	    text-align:center;
+	    left:50%;
+            margin-left:-510px;
+	    bottom:10px;
+	    z-index:98;
+    }
+    </style>
+    <script type="text/javascript" src="jquery-1.11.0.min.js"></script>
+    <script type="text/javascript">
+    // http://www.html5canvastutorials.com/tutorials/html5-canvas-element/
+
+    var context;
+    var imageObj;
+
+     // http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
+     function wrapText(context, text, x, y, maxWidth, lineHeight, calcOnly) {
+         var cars = text.split("\n");
+
+         for (var ii = 0; ii < cars.length; ii++) {
+
+             var line = "";
+             var words = cars[ii].split(" ");
+
+             for (var n = 0; n < words.length; n++) {
+                 var testLine = line + words[n] + " ";
+                 var metrics = context.measureText(testLine);
+                 var testWidth = metrics.width;
+
+                 if (testWidth > maxWidth) {
+                     if (!calcOnly) {
+                         context.fillText(line, x, y);
+                     }
+                     line = words[n] + " ";
+                     y += lineHeight;
+                 }
+                 else {
+                     line = testLine;
+                 }
+             }
+
+             if (!calcOnly) {
+                 context.fillText(line, x, y);
+             }
+             y += lineHeight;
+         }
+
+         return y;
+     }
+
+     $(function () {
+         var canvas = document.getElementById('cnvStamp');
+         context = canvas.getContext('2d');
+         var imageObj = new Image();
+
+         imageObj.onload = function () {
+             context.drawImage(imageObj, 0, 0);
+         };
+         imageObj.src = 'stempel.jpg';
+
+         $("#btnSetText").click(function () {
+             context.setTransform(1, 0, 0, 1, 0, 0);
+             context.drawImage(imageObj, 0, 0);
+
+             context.font = ($("#chkBold").is(":checked") ? "bold " : "") + $("#cbFontSize").val() + 'pt "' + $("#cbFont").val() + '"';
+             context.fillStyle = '#c22020';
+             context.textAlign = "center";
+             context.textBaseline = 'middle';
+
+             context.translate(165, 165);
+             context.rotate(-Math.PI / 8);
+
+             var t = $("#edPhrase").val().trim();
+             var lh = 1.4 * parseInt($("#cbFontSize").val());
+             
+             var h = wrapText(context, t, 0, 0, 200, lh, true);
+             wrapText(context, t, 0, -(h-lh)/2, 200, lh);
+
+             context.setTransform(1, 0, 0, 1, 0, 0);
+         });
+
+         // http://jsfiddle.net/AbdiasSoftware/7PRNN/
+         /**
+         * This is the function that will take care of image extracting and
+         * setting proper filename for the download.
+         * IMPORTANT: Call it from within a onclick event.
+         */
+         function downloadCanvas(link, canvasId, filename) {
+             link.href = document.getElementById(canvasId).toDataURL();
+             link.download = filename;
+         }
+
+         /** 
+         * The event handler for the link's onclick event. We give THIS as a
+         * parameter (=the link element), ID of the canvas and a filename.
+         */
+         document.getElementById('hlDownload').addEventListener('click', function () {
+             downloadCanvas(this, 'cnvStamp', "AK " + $("#edPhrase").val().trim() + '.png');
+         }, false);
+
+         setTimeout(function () {
+             $("#btnSetText").trigger("click");
+         }, 1000);
+     });
+    </script>
+  </head>
+  <body>
+    <div id="fb-root"></div>
+	<script>
+        (function (d, s, id) {
+    	    var js, fjs = d.getElementsByTagName(s)[0];
+		    if (d.getElementById(id)) return;
+		    js = d.createElement(s); js.id = id;
+		    js.src = "http://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+		    fjs.parentNode.insertBefore(js, fjs);
+		} (document, 'script', 'facebook-jssdk'));
+	</script>
+    <h3 style="text-align: center">Inoffizieller Stempelgenerator der Freunde und Freundinnen des <a href="https://www.facebook.com/groups/bildungsoffensiveblau/" target="_blank" style="text-decoration: none">Arbeitskreises DEUTSCH für FPÖ-Anhänger</a></h3>
+    <div id="container">
+        <div id="content">
+            <canvas id="cnvStamp" width="400" height="300"></canvas>
+            <div>        
+                <textarea id="edPhrase"  rows="2" cols="28">Wanzin !!!</textarea>
+            </div>
+            <div>
+                <select id="cbFontSize">
+                    <option value="14">14 pt</option>
+                    <option value="16">16 pt</option>
+                    <option value="18">18 pt</option>
+                    <option value="20" selected="selected">20 pt</option>
+                </select>
+                <select id="cbFont">
+                    <option value="Comic Sans MS">Comic Sans</option>
+                    <option value="Calibri">Calibri</option>
+                    <option value="Lucida Sans Unicode">Lucida</option>
+                    <option value="Segoe UI">Segoe</option>
+                    <option value="Verdana">Verdana</option>
+                </select>
+                <input type="checkbox" id="chkBold" />
+                <label for="chkBold">Fett</label>
+            </div>
+
+            <div style="margin-top: 4px">
+                <input type="button" value=" Erstellen " id="btnSetText" />
+                <a id="hlDownload"> Herunterladen </a>
+            </div>
+        </div>
+    </div>
+    <div id="bottombar">
+        <div style="bottom:4px; padding-right:4px;" class="fb-like" data-href="http://lagushkin.github.io/akstempel" data-width="20" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+		<a onClick="tweetblock=true" href="https://twitter.com/intent/tweet?hashtags=hextris&original_referer=http%3A%2F%2F0.0.0.0%3A8080%2F&text=Mach dir einen Stempel!%20-&tw_p=tweetbutton&url=http%3A%2F%2Flagushkin.github.io%2Fakstempel" class="twitter-share-button" data-url="http://lagushkin.github.io/akstempel" data-text="Mach dir einen Stempel! -" data-hashtags="akstempel">Tweet</a>
+		<script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + '://platform.twitter.com/widgets.js'; fjs.parentNode.insertBefore(js, fjs); } } (document, 'script', 'twitter-wjs');</script>
+	</div>
+    <div style="position: absolute; bottom: 40px; text-align: center; width: 100%; font-size: smaller">
+        Inspiration: <a href="https://www.facebook.com/groups/bildungsoffensiveblau/permalink/596124070510229/" target="_blank">Originalstempel</a> des <a href="https://www.facebook.com/groups/bildungsoffensiveblau/" target="_blank">Arbeitskreis DEUTSCH für FPÖ-Anhänger</a>. Umsetzung: <a href="https:www.facebook.com/dominik.lagushkin" target="_blank">DL</a>. FB: <a href="https://www.facebook.com/pages/Stempelgenerator-der-FreundInnen-des-AK-Deutsch-f%C3%BCr-FP%C3%96-Anh%C3%A4nger/563542633774139" target="_blank">SGAKD</a>.
+        <br />
+        Icon von <a href="http://www.iconarchive.com/artist/designcontest.html" target="_blank">DesignContest</a> <a href="http://creativecommons.org/licenses/by/4.0" target="_blank">CC BY 4.0</a> gefunden auf <a href="http://www.iconarchive.com/show/vintage-icons-by-designcontest/Stamp-icon.html" target="_blank">IconArchive</a>
+    </div>
+  </body>
+</html>      
